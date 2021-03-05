@@ -70,9 +70,10 @@ however asyncio.run() should suffice
 '''
 
 
-ports = [15240, 15241, 15242, 15243, 15244]
-servers = ['Riley', 'Jaquez', 'Juzang', 'Campbell', 'Bernard']
 
+servers = ['Riley', 'Jaquez', 'Juzang', 'Campbell', 'Bernard']
+ports = [15240, 15241, 15242, 15243, 15244]
+host = '127.0.0.1'
 serverToPorts = dict()
 for i in zip(servers, ports):
     serverToPorts[i[0]] = i[1]
@@ -91,15 +92,27 @@ class HTTP_Protocol(asyncio.Protocol):
 class ClientServer_Protocol(asyncio.Protocol):
     def __init__(self):
         pass
+    def connection_made(self, transport):
+        self.transport = transport
+    def data_received(self, data):
+        self.transport.write(data)
 
 class ServerServer_Protocol(asyncio.Protocol):
-    def __init__(self):
+    def __init__(self, transport):
         pass
 
 async def main():
-    print (sys.argv)
-    print (serverToPorts)
-    pass
+    if (not sys.argv or len(sys.argv) != 2):
+        print("ERR - INCORRECT NUMBER OF ARGS")
+        exit(1)
+    name = sys.argv[1]
+    if (name not in serverToPorts):
+        print ("ERR - INCORRECT SERVER NAME")
+        exit(1)
+
+    loop = asyncio.get_event_loop()
+    coro = await loop.create_server(ClientServer_Protocol, host=host, port=serverToPorts[name])
+    await coro.serve_forever()
 
 
 
