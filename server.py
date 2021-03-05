@@ -40,6 +40,15 @@ Testing:
         - telnet ucla.edu 80 (usually use 80
 '''
 
+'''
+
+asyncio.run(), introduced in Python 3.7, is responsible for getting the event loop, 
+running tasks until they are marked as complete, and then closing the event loop.
+
+
+
+'''
+
 class HTTP_Protocol():
     def __init__(self):
         pass
