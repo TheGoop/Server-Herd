@@ -40,6 +40,26 @@ Testing:
         - telnet ucla.edu 80 (usually use 80
 '''
 
+class HTTP_Protocol():
+    def __init__(self):
+        pass
+
+    def openSession(self):
+        pass
+
+    def closeSession(self):
+        pass
+
+class ClientServer_Protocol():
+    def __init__(self):
+        pass
+
+class ServerServer_Protocol():
+    def __init__(self):
+        pass
+
+
+
 
 
 
