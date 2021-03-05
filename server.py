@@ -3,6 +3,17 @@
 # Press ⌃R to execute it or replace it with your code.
 # Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
 
+import asyncio
+import logging
+import re
+import sys
+from typing import IO
+import urllib.error
+import urllib.parse
+
+import aiofiles
+import aiohttp
+from aiohttp import ClientSession
 
 
 '''
@@ -45,11 +56,20 @@ Testing:
 asyncio.run(), introduced in Python 3.7, is responsible for getting the event loop, 
 running tasks until they are marked as complete, and then closing the event loop.
 
+There’s a more long-winded way of managing the asyncio event loop, with get_event_loop(). 
+The typical pattern looks like this:
 
+loop = asyncio.get_event_loop()
+try:
+    loop.run_until_complete(main())
+finally:
+    loop.close()
+
+however asyncio.run() should suffice
 
 '''
 
-class HTTP_Protocol():
+class HTTP_Protocol(asyncio.Protocol):
     def __init__(self):
         pass
 
@@ -59,29 +79,17 @@ class HTTP_Protocol():
     def closeSession(self):
         pass
 
-class ClientServer_Protocol():
+class ClientServer_Protocol(asyncio.Protocol):
     def __init__(self):
         pass
 
-class ServerServer_Protocol():
+class ServerServer_Protocol(asyncio.Protocol):
     def __init__(self):
         pass
 
-
-
-
-import asyncio
 async def main():
-    server = await asyncio.start_server(handle_connection, host='127.0.0.1', port=12345)
-    await server.serve_forever()
-
-async def handle_connection(reader, writer):
-    data = await reader.readline()
-    name = data.decode()
-    greeting = "Hello, " + name
-    writer.write(greeting.encode())
-    await writer.drain()
-    writer.close()
+    print (sys.argv)
+    pass
 
 if __name__ == '__main__':
     asyncio.run(main())
