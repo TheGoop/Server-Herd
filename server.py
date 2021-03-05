@@ -61,16 +61,18 @@ class ServerServer_Protocol():
 
 
 
+import asyncio
+async def main():
+    server = await asyncio.start_server(handle_connection, host='127.0.0.1', port=12345)
+    await server.serve_forever()
 
+async def handle_connection(reader, writer):
+    data = await reader.readline()
+    name = data.decode()
+    greeting = "Hello, " + name
+    writer.write(greeting.encode())
+    await writer.drain()
+    writer.close()
 
-
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press ⌘F8 to toggle the breakpoint.
-
-
-# Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    asyncio.run(main())
