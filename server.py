@@ -91,5 +91,13 @@ async def main():
     print (sys.argv)
     pass
 
+
+ports = [15240, 15241, 15242, 15243, 15244]
+servers = ['Riley', 'Jaquez', 'Juzang', 'Campbell', 'Bernard']
+
+serverToPorts = dict()
+#serverToPorts[]
+
 if __name__ == '__main__':
+    print (zip(ports, servers))
     asyncio.run(main())
