@@ -69,6 +69,15 @@ however asyncio.run() should suffice
 
 '''
 
+
+ports = [15240, 15241, 15242, 15243, 15244]
+servers = ['Riley', 'Jaquez', 'Juzang', 'Campbell', 'Bernard']
+
+serverToPorts = dict()
+for i in zip(servers, ports):
+    serverToPorts[i[0]] = i[1]
+
+
 class HTTP_Protocol(asyncio.Protocol):
     def __init__(self):
         pass
@@ -89,15 +98,10 @@ class ServerServer_Protocol(asyncio.Protocol):
 
 async def main():
     print (sys.argv)
+    print (serverToPorts)
     pass
 
 
-ports = [15240, 15241, 15242, 15243, 15244]
-servers = ['Riley', 'Jaquez', 'Juzang', 'Campbell', 'Bernard']
-
-serverToPorts = dict()
-#serverToPorts[]
 
 if __name__ == '__main__':
-    print (zip(ports, servers))
     asyncio.run(main())
