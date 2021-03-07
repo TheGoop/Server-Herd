@@ -3,21 +3,20 @@ import asyncio
 import re
 from key import API_KEY
 
-async def get_place_info(loc, r, bound):
+async def scrape_places(url):
 
     async with aiohttp.ClientSession() as session:
-        async with session.get('http://python.org') as response:
-
-            print("Status:", response.status)
-            print("Content-type:", response.headers['content-type'])
+        async with session.get(url) as response:
+            #print("Status:", response.status)
+            if response.status != 200:
+                print ("BAD REQUEST")
+            #print("Content-type:", response.headers['content-type'])
 
             html = await response.text()
-            print (html)
-            print("Body:", html[:15], "...")
+            return html
 
 def parse_loc(loc):
     coords = re.findall( "([+-]\d+(?:\.\d+)?)", loc)
-    print (coords)
     if len(coords) != 2:
         raise ValueError("Invalid location string")
     try:
@@ -33,7 +32,7 @@ def query_user():
     b = input("Enter information upper bound: ")
     try:
         coords = parse_loc(loc)
-        print ("Latitude: %s, Longitude: %s" %(coords[0], coords[1]))
+        #print ("Latitude: %s, Longitude: %s" %(coords[0], coords[1]))
     except ValueError as err:
         print (err.args[0])
         exit(1)
@@ -53,15 +52,26 @@ def query_user():
     except:
         print("Invalid information upper bound value")
         exit(1)
+    return (coords, r, b)
 
+def construct_url(loc, r, b):
+    url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location="
+    url += loc[0] + "," + loc[1] + "&radius=" + str(r) + "&key=" + API_KEY
+    return url
 
+async def get_places_data(loc, r, b):
+    url = construct_url(loc, r, b)
+    #print (url)
+    data = await scrape_places(url)
+    return data
 
 async def main():
     locs = "-34+117.23049"
-    print ()
-    query_user()
+
+    loc, r, b = query_user()
+    data = await get_places_data(loc, r, b)
+    print (data)
 
 loop = asyncio.get_event_loop()
 loop.run_until_complete(main())
 
-print (API_KEY)

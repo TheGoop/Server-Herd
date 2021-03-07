@@ -111,8 +111,8 @@ async def main():
         exit(1)
 
     loop = asyncio.get_event_loop()
-    coro = await loop.create_server(ClientServer_Protocol, host=host, port=serverToPorts[name])
-    await coro.serve_forever()
+    server = await loop.create_server(ClientServer_Protocol, host=host, port=serverToPorts[name])
+    await server.serve_forever()
 
 
 
