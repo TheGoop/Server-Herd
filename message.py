@@ -19,16 +19,23 @@ class MessageExtractor:
             coords = parse_loc(split_msg[2])
         except ValueError:
             print (err.args[0])
-            raise ValueError
+            raise ValueError(err.args[0])
+            return
 
+        try:
+            self.IAMAT_info["timestamp"] = float(split_msg[3])
+        except:
+            raise ValueError("Invalid timestamp")
+            return
         self.type = split_msg[0]
+        self.IAMAT_info["type"] = self.type
         self.IAMAT_info["lat"] = coords[0]
         self.IAMAT_info["long"] = coords[1]
         self.IAMAT_info["id"] = split_msg[1]
-        self.IAMAT_info["timestamp"] = split_msg[3]
 
     def _WHATSAT_handler(self, split_msg):
         self.type = split_msg[0]
+        self.WHATSAT_info["info"] = self.type
         self.WHATSAT_info["id"] = split_msg[1]
         self.WHATSAT_info["radius"] = split_msg[2]
         self.WHATSAT_info["num_results"] = split_msg[3]
@@ -62,8 +69,46 @@ class MessageExtractor:
 
         return None
 
+    def get_data(self):
+        #assumes object has already been loaded and is a valid message otherwise returns None
+        if self.type == IAMAT:
+            return self.IAMAT_info
+        elif self.type == WHATSAT:
+            return self.WHATSAT_info
+        else:
+            return None
+'''
+    def make_response(self, name):
+        if self.type == WHATSAT:
+            t = time.time() - data["timestamp"]
+            s = "AT " + name + " "
+            if t >= 0:
+                s += "+"
+            s += str(t)
+            s += data["id"] + " "
+            s += data["lat"]
+            s += data["long"]
+            s += " " + data["timestamp"]
+            return s
 
+        elif self.type == IAMAT:
+            pass
 
+        else:
+            raise ValueError("Type bad: " + str(self.type))
+'''
+if __name__ == '__main__':
+    while True:
+        msg = input("Input message: ")
+        o = MessageExtractor(msg)
+        print (o.load_info())
+        print (o.type)
+        if o.type == WHATSAT:
+            print (o.WHATSAT_info)
+        elif o.type == IAMAT:
+            print (o.IAMAT_info)
+
+        print(o.make_response("Hill"))
 
 
 

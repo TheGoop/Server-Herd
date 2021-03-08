@@ -14,8 +14,8 @@ import urllib.parse
 import aiofiles
 import aiohttp
 from aiohttp import ClientSession
-from message import MessageExtractor
-
+from message import MessageExtractor, IAMAT, WHATSAT
+import time
 
 '''
 Commands:
@@ -99,6 +99,26 @@ class Server:
     def data_received(self, data):
         self.transport.write(data)
 
+    async def make_response(self, data):
+        if data["type"] == WHATSAT:
+            t = time.time() - data["timestamp"]
+            s = "AT " + self.name + " "
+            if t >= 0:
+                s += "+"
+            s += str(t)
+            s += data["id"] + " "
+            s += data["lat"]
+            s += data["long"]
+            s += " " + data["timestamp"]
+            return s
+
+        elif data["type"] == IAMAT:
+            pass
+
+        else:
+            return None
+
+
 
     async def handle_client(self, reader, writer):
         data = await reader.read()
@@ -111,8 +131,10 @@ class Server:
         is_bad = parsed.load_info()
 
         #if we are given that the msg is bad, we return that is_bad message
-        if r:
+        if is_bad:
             pass
+
+        response = self.make_response(parsed.get_data())
 
 
 
