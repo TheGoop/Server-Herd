@@ -35,10 +35,10 @@ class MessageExtractor:
 
     def _WHATSAT_handler(self, split_msg):
         self.type = split_msg[0]
-        self.WHATSAT_info["info"] = self.type
+        self.WHATSAT_info["type"] = self.type
         self.WHATSAT_info["id"] = split_msg[1]
         self.WHATSAT_info["radius"] = split_msg[2]
-        self.WHATSAT_info["num_results"] = split_msg[3]
+        self.WHATSAT_info["bound"] = split_msg[3]
 
     def load_info(self):
         #if we have a bad message in this, we return the bad message else we return None

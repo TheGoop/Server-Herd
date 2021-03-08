@@ -16,6 +16,7 @@ import aiohttp
 from aiohttp import ClientSession
 from message import MessageExtractor, IAMAT, WHATSAT
 import time
+from places import get_places_data
 
 '''
 Commands:
@@ -93,31 +94,57 @@ class Server:
         self.name = name
         self.neighbors = neighbors
         self.port = port
+        self.lat = None
+        self.long = None
+        self.timestamp = float("-inf")
 
     def connection_made(self, transport):
         self.transport = transport
     def data_received(self, data):
         self.transport.write(data)
 
-    async def make_response(self, data):
-        if data["type"] == WHATSAT:
-            t = time.time() - data["timestamp"]
-            s = "AT " + self.name + " "
-            if t >= 0:
-                s += "+"
-            s += str(t)
-            s += data["id"] + " "
-            s += data["lat"]
-            s += data["long"]
-            s += " " + data["timestamp"]
-            return s
+    def handle_IAMAT(self, data):
+        if data["type"] != IAMAT:
+            raise ValueError("Incorrect type of data to update server")
 
-        elif data["type"] == IAMAT:
-            pass
+        if data["timestamp"] > self.timestamp:
+            self.lat = data["lat"]
+            self.long = data["long"]
+            self.timestamp = data["timestamp"]
 
-        else:
-            return None
+    def response_IAMAT(self, data):
+        if "type" not in data or data["type"] != IAMAT:
+            raise ValueError("Incorrect data for response")
 
+        s = "AT " + self.name + " "
+        try:
+            time_diff = time.time() - float(data["timestamp"])
+        except:
+            print ("Some error with subtracting times")
+            exit(1)
+        if time_diff > 0:
+            s += "+"
+        s += time_diff + " " + data["id"] + " " + data["lat"] + data["long"] + " " + str(data["timestamp"])
+
+        return s
+
+    async def response_WHATSAT(self, data):
+        if "type" not in data or data["type"] != WHATSAT:
+            raise ValueError("Incorrect data for response")
+
+        t = time.time() - data["timestamp"]
+        s = "AT " + name + " "
+        if t >= 0:
+            s += "+"
+        s += str(t)
+        s += data["id"] + " "
+        s += self.lat
+        s += self.long
+        s += " " + data["timestamp"] + "\n"
+
+        place_data = await get_places_data(self.lat+self.long, data["radius"], data["bound"])
+        s += place_data
+        return s
 
 
     async def handle_client(self, reader, writer):
@@ -134,11 +161,12 @@ class Server:
         if is_bad:
             pass
 
-        response = self.make_response(parsed.get_data())
+        if parsed.type == IAMAT:
+            self.handle_IAMAT(parsed.get_data())
+            response = self.response_IAMAT(parsed.get_data())
 
-
-
-
+        elif parsed.type == WHATSAT:
+            response = self.response_WHATSAT(parsed.get_data())
         pass
 
 
