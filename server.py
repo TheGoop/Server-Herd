@@ -105,9 +105,16 @@ class Server:
         msg = data.decode()
 
         addr = writer.get_extra_info('peername')
-        print("Received %r from %r" % (message, addr))
+        print("Received %r from %r" % (msg, addr))
 
         parsed = MessageExtractor(msg)
+        is_bad = parsed.load_info()
+
+        #if we are given that the msg is bad, we return that is_bad message
+        if r:
+            pass
+
+
 
 
         pass

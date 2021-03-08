@@ -1,43 +1,66 @@
 import datetime
-
+from places import parse_loc
 IAMAT = "IAMAT"
 WHATSAT = "WHATSAT"
 
 class MessageExtractor:
     def __init__(self, msg):
-        msg.strip()
         self.original_msg = msg
+        msg.strip()
+        self.msg = msg
         self.type = None
+        self.IAMAT_info = dict()
+        self.WHATSAT_info = dict()
+        self.bad_msg = "? " + self.original_msg
         self.is_loaded = False
 
-
     def _IAMAT_handler(self, split_msg):
+        try:
+            coords = parse_loc(split_msg[2])
+        except ValueError:
+            print (err.args[0])
+            raise ValueError
 
-        pass
+        self.type = split_msg[0]
+        self.IAMAT_info["lat"] = coords[0]
+        self.IAMAT_info["long"] = coords[1]
+        self.IAMAT_info["id"] = split_msg[1]
+        self.IAMAT_info["timestamp"] = split_msg[3]
 
     def _WHATSAT_handler(self, split_msg):
-        pass
+        self.type = split_msg[0]
+        self.WHATSAT_info["id"] = split_msg[1]
+        self.WHATSAT_info["radius"] = split_msg[2]
+        self.WHATSAT_info["num_results"] = split_msg[3]
 
-    def load_extractor(self):
-        if is_loaded:
-            return
+    def load_info(self):
+        #if we have a bad message in this, we return the bad message else we return None
 
-        s = self.original_msg.split()
+        #if its already loaded, return None
+        if self.is_loaded:
+            return None
+
+        s = self.msg.split()
         if (len(s) != 4):
-            raise ValueError("Bad message format - incorrect number of args")
+            return self.bad_msg
 
-        if (s[0] == IAMAT or s[0] == WHATSAT):
-            self.type = s[0]
+        if s[0] == IAMAT:
+            try:
+                self._IAMAT_handler(s)
+            except ValueError:
+                return self.bad_msg
+
+        elif s[0] == WHATSAT:
+            try:
+                self._WHATSAT_handler(s)
+            except ValueError:
+                return self.bad_msg
+
         else:
-            raise ValueError("Bad command - limited to IAMAT or WHATSAT")
+            print("Bad command - limited to IAMAT or WHATSAT")
+            return self.bad_msg
 
-        if self.type == IAMAT:
-            self._IAMAT_handler(s)
-        elif self.type == WHATSAT:
-            self._WHATSAT_handler(s)
-
-        self.is_loaded = True
-        return
+        return None
 
 
 
