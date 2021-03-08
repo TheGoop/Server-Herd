@@ -159,7 +159,7 @@ class Server:
 
         #if we are given that the msg is bad, we return that is_bad message
         if is_bad:
-            pass
+            raise NotImplementedError
 
         if parsed.type == IAMAT:
             self.handle_IAMAT(parsed.get_data())
@@ -167,7 +167,8 @@ class Server:
 
         elif parsed.type == WHATSAT:
             response = self.response_WHATSAT(parsed.get_data())
-        pass
+
+        raise NotImplementedError
 
 
 

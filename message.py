@@ -77,26 +77,7 @@ class MessageExtractor:
             return self.WHATSAT_info
         else:
             return None
-'''
-    def make_response(self, name):
-        if self.type == WHATSAT:
-            t = time.time() - data["timestamp"]
-            s = "AT " + name + " "
-            if t >= 0:
-                s += "+"
-            s += str(t)
-            s += data["id"] + " "
-            s += data["lat"]
-            s += data["long"]
-            s += " " + data["timestamp"]
-            return s
 
-        elif self.type == IAMAT:
-            pass
-
-        else:
-            raise ValueError("Type bad: " + str(self.type))
-'''
 if __name__ == '__main__':
     while True:
         msg = input("Input message: ")
