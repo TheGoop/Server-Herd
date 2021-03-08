@@ -14,6 +14,7 @@ import urllib.parse
 import aiofiles
 import aiohttp
 from aiohttp import ClientSession
+from message import MessageExtractor
 
 
 '''
@@ -92,12 +93,23 @@ class Server:
         self.name = name
         self.neighbors = neighbors
         self.port = port
-        pass
+
     def connection_made(self, transport):
         self.transport = transport
     def data_received(self, data):
         self.transport.write(data)
+
+
     async def handle_client(self, reader, writer):
+        data = await reader.read()
+        msg = data.decode()
+
+        addr = writer.get_extra_info('peername')
+        print("Received %r from %r" % (message, addr))
+
+        parsed = MessageExtractor(msg)
+
+
         pass
 
 
