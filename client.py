@@ -1,5 +1,4 @@
 import asyncio
-
 async def main():
     reader, writer = await asyncio.open_connection('127.0.0.1', 12345)
     writer.write("John\n".encode())

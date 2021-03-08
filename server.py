@@ -78,28 +78,25 @@ serverToPorts = dict()
 for i in zip(servers, ports):
     serverToPorts[i[0]] = i[1]
 
+_neighbors = dict()
+_neighbors["Riley"] = ["Jaquez", "Juzang"]
+_neighbors["Juzang"] = ["Campbell"]
+_neighbors["Bernard"] = ['Jaquez', 'Juzang', 'Campbell', 'Bernard']
+_neighbors["Jaquez"] = ["Riley", "Bernard"] #bidrectional
+_neighbors["Campbell"] = ["Juzang", "Bernard"] #bidrectional
 
-class HTTP_Protocol(asyncio.Protocol):
-    def __init__(self):
-        pass
 
-    def openSession(self):
-        pass
 
-    def closeSession(self):
-        pass
+class Server:
+    def __init__(self, name, neighbors, port):
 
-class ClientServer_Protocol(asyncio.Protocol):
-    def __init__(self):
         pass
     def connection_made(self, transport):
         self.transport = transport
     def data_received(self, data):
         self.transport.write(data)
 
-class ServerServer_Protocol(asyncio.Protocol):
-    def __init__(self, transport):
-        pass
+
 
 async def main():
     if (not sys.argv or len(sys.argv) != 2):
