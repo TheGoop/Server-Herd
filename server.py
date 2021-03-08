@@ -89,12 +89,16 @@ _neighbors["Campbell"] = ["Juzang", "Bernard"] #bidrectional
 
 class Server:
     def __init__(self, name, neighbors, port):
-
+        self.name = name
+        self.neighbors = neighbors
+        self.port = port
         pass
     def connection_made(self, transport):
         self.transport = transport
     def data_received(self, data):
         self.transport.write(data)
+    async def handle_client(self, reader, writer):
+        pass
 
 
 
@@ -107,9 +111,22 @@ async def main():
         print ("ERR - INCORRECT SERVER NAME")
         exit(1)
 
+    s = Server(name=name, neighbors=_neighbors[name], port=serverToPorts[name])
+
     loop = asyncio.get_event_loop()
-    server = await loop.create_server(ClientServer_Protocol, host=host, port=serverToPorts[name])
-    await server.serve_forever()
+    coro = asyncio.start_server(s.handle_client, '127.0.0.1', s.port, loop=loop)
+    server = loop.run_until_complete(coro)
+
+    print('Serving on {}'.format(server.sockets[0].getsockname()))
+    try:
+        loop.run_forever()
+    except KeyboardInterrupt:
+        pass
+
+    # Close the server
+    server.close()
+    loop.run_until_complete(server.wait_closed())
+    loop.close()
 
 
 
